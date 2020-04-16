@@ -1,0 +1,2 @@
+$ python ex-logger.py
+INFO:root:[tenjin.TextCacheStorage] load cache (file='/home/user/example.pyhtml.cache')

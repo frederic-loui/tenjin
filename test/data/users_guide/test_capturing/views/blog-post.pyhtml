@@ -1,0 +1,15 @@
+<?py from __future__ import with_statement ?>
+<?py #@ARGS blog_post, recent_posts ?>
+<h2>#{blog_post['title']}</h2>
+<div class="blog-post">
+#{text2html(blog_post['content'])}
+</div>
+
+<?py with capture_as('sidebar'): ?>
+<h3>Recent Posts</h3>
+<ul>
+<?py for post in recent_posts: ?> 
+  <a href="/blog/#{post['id']}">${post['title']}</a>
+<?py #endfor ?>
+</ul>
+<?py #endwith ?>

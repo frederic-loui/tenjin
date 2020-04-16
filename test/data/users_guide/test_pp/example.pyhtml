@@ -1,0 +1,26 @@
+## Original html template
+<div>
+  <ul>
+    <?py for item in items: ?>
+    <li>${item}</li>
+    <?py #endfor ?>
+  </ul>
+</div>
+
+## Preprocessed template when loading
+<div>
+<ul>
+<?py for item in items: ?>
+<li>${item}</li>
+<?py #endfor ?>
+</ul>
+</div>
+
+## Output example
+<div>
+<ul>
+<li>Foo</li>
+<li>Bar</li>
+<li>Baz</li>
+</ul>
+</div>

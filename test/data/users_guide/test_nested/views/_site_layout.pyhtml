@@ -1,0 +1,6 @@
+<?py #@ARGS _content ?>
+<html>
+  <body>
+#{_content}
+  </body>
+</html>

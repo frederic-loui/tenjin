@@ -1,0 +1,13 @@
+<?py #@ARGS _content, page_title ?>
+<!DOCTYPE>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>${page_title}</title>
+  </head>
+  <body>
+<?py include('_header.pyhtml', title=page_title) ?>
+#{_content}
+<?py include('_footer.pyhtml') ?>
+  </body>
+</html>

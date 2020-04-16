@@ -1,0 +1,9 @@
+<?PY
+## ex. link_to('Show', '/show/1')  => <a href="/show/1">Show</a>
+def link_to(label, url):
+    try:    from urllib.parse import quote
+    except: from urllib import quote
+    return '<a href="%s">%s</a>' % (quote(url), label)
+#enddef
+?>
+#{{link_to('Show '+_P('params["name"]'), '/items/show/'+_p('params["id"]'))}}

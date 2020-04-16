@@ -1,0 +1,15 @@
+<?PY states = { "CA": "California", ?>
+<?PY            "NY": "New York", ?>
+<?PY            "FL": "Florida",  ?>
+<?PY            "TX": "Texas",  ?>
+<?PY            "HI": "Hawaii", } ?>
+<?PY # ?>
+<?py chk = { params['state']: ' selected="selected"' } ?>
+<?PY codes = list(states.keys()) ?>
+<?PY codes.sort() ?>
+<select name="state">
+  <option value="">-</option>
+  <?PY for code in codes: ?>
+  <option value="#{{code}}"#{chk.get('#{{code}}', '')}>${{states[code]}}</option>
+  <?PY #endfor ?>
+</select>

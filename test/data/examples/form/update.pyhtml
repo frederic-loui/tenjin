@@ -1,0 +1,4 @@
+<?py _context['title'] = 'Update user' ?>
+<?py _context['label'] = 'Update' ?>
+<?py _context['action'] = 'update.cgi' ?>
+<?py include(':form') ?>

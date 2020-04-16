@@ -1,0 +1,4 @@
+<?py _context['title'] = 'Create user' ?>
+<?py _context['label'] = 'Create' ?>
+<?py _context['action'] = 'action.cgi' ?>
+<?py include(':form') ?>

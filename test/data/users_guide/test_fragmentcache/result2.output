@@ -1,0 +1,6 @@
+$ cat cache.d/items/1
+  <ul>
+    <li>AAA</li>
+    <li>BBB</li>
+    <li>CCC</li>
+  </ul>

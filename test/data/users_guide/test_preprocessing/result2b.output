@@ -1,0 +1,10 @@
+$ pytenjin --preprocess -sb views/pp-example2.pyhtml
+_extend=_buf.extend;_to_str=to_str;_escape=escape; chk = { params['state']: ' selected="selected"' }
+_extend(('''<select name="state">
+  <option value="">-</option>
+  <option value="CA"''', _to_str(chk.get('CA', '')), '''>California</option>
+  <option value="FL"''', _to_str(chk.get('FL', '')), '''>Florida</option>
+  <option value="HI"''', _to_str(chk.get('HI', '')), '''>Hawaii</option>
+  <option value="NY"''', _to_str(chk.get('NY', '')), '''>New York</option>
+  <option value="TX"''', _to_str(chk.get('TX', '')), '''>Texas</option>
+</select>\n''', ));

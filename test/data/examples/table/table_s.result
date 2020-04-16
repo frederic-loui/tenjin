@@ -1,0 +1,18 @@
+$ pytenjin -a convert table.pyhtml
+_buf = []; _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<html>
+  <body>
+    <h1>''', _escape(_to_str(title)), '''</h1>
+    <table>\n''', ));
+i = 0
+for item in items:
+    i += 1
+    color = i % 2 == 0 and '#FFCCCC' or '#CCCCFF'
+    _extend(('''      <tr bgcolor="''', _to_str(color), '''">
+        <td>''', _to_str(i), '''</td>
+        <td>''', _escape(_to_str(item)), '''</td>
+      </tr>\n''', ));
+#endfor
+_extend(('''    </table>
+  </body>
+</html>\n''', ));
+print(''.join(_buf))

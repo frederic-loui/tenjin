@@ -1,0 +1,6 @@
+$ pytenjin -sP -c 'value="My Great Example"' views/pp-example1.pyhtml
+_buf = []; _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''## normal expression
+value = ${value}
+## with preprocessing
+value = ''', _escape(_to_str(_decode_params(value))), '''\n''', ));
+print(''.join(_buf))

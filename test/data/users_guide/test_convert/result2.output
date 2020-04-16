@@ -1,0 +1,6 @@
+$ pytenjin -sb example.pyhtml
+_extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<ul>\n''', ));
+for item in items:
+    _extend(('''  <li>''', _escape(_to_str(item)), '''</li>\n''', ));
+#endfor
+_extend(('''</ul>\n''', ));

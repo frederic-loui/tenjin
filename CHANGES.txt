@@ -1,0 +1,711 @@
+=======
+CHANGES
+=======
+
+
+Release 1.1.1 (2012-05-18)
+--------------------------
+
+* [Bugfix] Fix 'benchmark/bench.py' to work on PyPy.
+
+* [Bugfix] Tweak document.
+
+
+Release 1.1.0 (2012-02-16)
+--------------------------
+
+* [Change] !! IMPORTANT!! Default cache file format is changed from
+  marshal format to text format.
+  You should remove all cache files to use this release.
+
+      $ find . -name '*.cache' | xargs rm
+
+  There are some reason about this change:
+
+  * User can see converted Python code very easily with text format,
+    but not easy with marshal format.
+  * Benefit of marshal format is that loading speed is a little faster
+    than text format. But this benefit is very little, especially
+    persistent process or Google App Engine.
+  * Marshal format is not compatible between different version of Python.
+  * Jython can't load marshal format.
+
+  If you prefer marshal format rather than text format, please specify
+  MarshalCacheStorage object to 'cache' option of Engine class.
+
+      engine = tenjin.Engine(cache=tenjin.MarshalCacheStorage())
+      ### or
+      tenjin.Engine.cache = tenjin.MarshalCacheStorage()
+
+* [Enhance] Embedded pattern '${}' and '#{}' can contain pair of '{' and '}'. ::
+
+      <p>${foo({'x':1})}</p>          # OK
+      <p>${foo({}+{}+{})}</p>         # OK
+      <p>${foo({'x':{'y':1}})}</p>    # NG
+
+* [Enhance] New preprocessing mechanism. You can specify your own preprocessor
+  class by 'pp' parameter. ::
+
+      require 'tenjin'
+      pp = [
+        tenjin.TemplatePreprocessor(),      # preprocessing
+        tenjin.TrimPreprocessor(),          # remove spaces at beginning of lines
+        tenjin.PrefixedLinePreprocessor(),  # converts ':: ...' to '<?py ... ?>'
+      ]
+      engine = tenjin.Engine(pp=pp)         # pass preprocessors
+
+  This release keeps backward compatibilidy. You can still use 'preprocess=True' option.
+
+* [Enhance] Add 'TrimPreprocessor' which removes spaces ad the beginning of lines.
+  You can reduce size of output by it.
+  For example::
+
+      <div>
+        <ul>
+        <?py for item in items: ?>
+          <li>${item}</li>
+        <?py #endfor ?>
+        </ul>
+      </div>
+
+  will be converted into:
+
+      <div>
+      <ul>
+      <?py for item in items: ?>
+      <li>${item}</li>
+      <?py #endfor ?>
+      </ul>
+      </div>
+
+  by TrimPreprocessor and passed into tenjin.Engine object.
+
+  How to use it::
+
+      require 'tenjin'
+      pp = [ tenjin.TrimPreprocessor() ]
+      engine = tenjin.Engine(pp=pp)
+      context = { 'items': ["Haruhi", "Mikuru", "Yuki"] }
+      output = engine.render('example.pyhtml', context)
+      print(html)
+
+* [Enhance] Add 'PrefixedLinePreprocessor' which converts ':: ...' into '<?py ... ?>'.
+  You may like ':: ...' because it is simpler than '<?py ... ?>'.
+  For example::
+
+      <div>
+        <ul>
+        :: for item in items:
+          <li>${item}</li>
+        :: #endfor
+        </ul>
+      </div>
+
+  will be converted into::
+
+      <div>
+        <ul>
+        <?py for item in items: ?>
+        <li>${item}</li>
+        <?py #endfor ?>
+        </ul>
+      </div>
+
+  by PrefixedLinePreprocessor and passed to tenjin.Engine.
+
+  How to use it::
+
+      pp = [ tenjin.PrefixedLinePreprocessor() ]
+      engine = tenjin.Engine(pp=pp)
+      context = { 'items': ["Haruhi", "Mikuru", "Yuki"] }
+      output = engine.render('example.pyhtml', context)
+      print(html)
+
+* [Enhance] Add 'JavaScriptPreprocessor' class which enables you to embed
+  client-side javascript template code into server-side template.
+  For example::
+
+      <div id="placeholder">
+        <!-- #JS: render_table(items) -->
+        <table>
+          <?js for (var i = 0, n = items.length; i < n; i++) { ?>
+          <tr>
+            <td>#{i}</td>
+            <td>${items[i]}</td>
+          </tr>
+          <?js } ?>
+        </table>
+        <!-- #/JS -->
+      </div>
+      <script>#{tenjin.JS_FUNC}</script>
+      <script>
+        var html = render_table(["Haruhi", "Mikuru", "Yuki"]);
+        document.getElementById('placehodler').innerHTML = html;
+      </script>
+
+  will be converted into::
+
+      <div id="placeholder">
+        <script>function render_table(items){var _buf='';
+      _buf+='  <table>\n';
+           for (var i = 0, n = items.length; i < n; i++) {
+      _buf+='    <tr>\n\
+            <td>'+_S(i)+'</td>\n\
+            <td>'+_E(items[i])+'</td>\n\
+          </tr>\n';
+           }
+      _buf+='  </table>\n';
+        return _buf;};</script>
+      </div>
+      <script>#{tenjin.JS_FUNC}</script>
+      <script>
+        var html = render_table(["Haruhi", "Mikuru", "Yuki"]);
+        document.getElementById('placehodler').innerHTML = html;
+      </script>
+
+  by JavaScriptPreprocessor.
+  Notice that you should embed 'tenjin.JS_FUNC' to run client-side code.
+
+  How to use it::
+
+      pp = [ tenjin.JavaScriptPreprocessor() ]
+      engine = tenjin.Engine(pp=pp)
+      output = engine.render('example.pyhtml', {})
+      print(html)
+
+* [Enhance] Now supports Jython 2.5.2. (thanks to Lars Hupfeldt Nielsen)
+
+* [Enhance] Now supports PyPy 1.7 or later officially.
+
+* [Change] Template#convert() now converts "\r\n" into "\\r\n".
+  This is necessary to follow change of language specification on
+  Python 2.7 and 3.2.
+
+
+
+Release 1.0.2 (2011-04-29)
+--------------------------
+
+* [Bugfix]
+
+  * Set 'sys.modules["tenjin.helpers.html"]' for backward compatibility
+
+  * Fix wrong url on document.
+
+
+Release 1.0.1 (2010-02-22)
+--------------------------
+
+* [Bugfix]
+
+  * Add 'new_cycle' into 'tenjin.helpers.__al__'
+
+
+Release 1.0.0 (2010-02-22)
+--------------------------
+
+* [Enhancements]
+
+  * (IMPORTANT!!) Performance is improved (about 5 percent).
+    To improve performance, compiled Python code is changed.
+    This means that YOU MUST TOUCH ALL TEMPLATE FILES AND UPDATE TIME STAMPS
+    OF THEM in order to clear cache data before using this release.
+
+      ## touch all template files to clear cache data
+      $ find . -name '*.pyhtml' | xargs touch
+      ## show compiled python code
+      $ cat ex.pyhtml
+      <ul>
+      <?py for item in items: ?>
+        <li>${item}</li>
+      <?py #endfor ?>
+      <?ul>
+      $ pytenjin -sb ex.pyhtml
+      _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<ul>\n''', ));
+      for item in items:
+          _extend(('''  <li>''', _escape(_to_str(item)), '''</li>\n''', ));
+      #endfor
+      _extend(('''<?ul>\n''', ));
+
+  * (IMPORTANT!!) Free-indent style supported. Now there is no limitation
+    about indent.
+
+      ## In the previous version, there is strong restriction about indent.
+      <html>
+        <body>
+          <table>
+      <?py for item in items: ?>
+            <tr>
+              <td>${item}</td>
+            </tr>
+      <?py #endfor ?>
+          </table>
+        </body>
+      </html>
+
+      ## In this release, you can place statements freely.
+      <html>
+        <body>
+          <table>
+            <?py for item in items: ?>
+            <tr>
+              <td>${item}</td>
+            </tr>
+            <?py #endfor ?>
+          </table>
+        </body>
+      </html>
+
+  * (IMPORTANT!!) SafeTemplate and SafeEngine classes are now provided.
+    These classes support autoescaping similar to Django or Jinja2.
+    See
+      http://www.kuwata-lab.com/tenjin/pytenjin-users-guide.html#auto-escaping
+    for details.
+
+  * (IMPORTANT!!) New function 'tenjin.set_template_encoding()' is provided.
+    If you prefer templates to be unicode-base like Django or Jinja2,
+    call it before importing helpers.
+
+       ## change Tenjin to be unicode-based
+       import tenjin
+       tenjin.set_template_encoding('utf-8')  # call before importing helpers
+       from tenjin.helpers import *
+       ## The above is same as:
+       #import tenjin
+       #Template.encoding = 'utf-8'
+       #tenjin.helpers.to_str = tenjin.helpers.generate_tostrfunc(decode='utf-8')
+       #from tenjin.helpers import *
+
+    Notice that you should NOT write '<?py # coding: utf-8 ?>' into template
+    files if you call tenjin.set_template_encoding(). If you wrote it,
+    SyntaxError exception would be raised.
+
+  * (IMPORTANT!!) New helper function 'cache_as()' is available for fragment cache.
+    This replaces 'not_cached()' and 'echo_cached()'.
+
+       ## previous (obsolete)
+       <?py if not_cached('cachekey1', 60): ?>
+         ...
+       <?py #endif ?>
+       <?py echo_cached() ?>
+
+       ## using new helper
+       <?py for _ in cache_as('cachekey1', 60): ?>
+         ...
+       <?py #endfor ?>
+
+    'not_cached()' and 'echo_cached()' are still available but not recommended.
+
+  * (IMPORTANT!!) New helper 'capture_as()' is available for capturing template.
+    This replaces 'start_capture()' and 'stop_capture()'.
+
+       ## preivous (obsolete)
+       <?py start_capture('name') ?>
+         ....
+       <?py stop_capture() ?>
+
+       ## using new helper
+       <?py with capture_as('name'): ?>
+         ....
+       <?py #endfor ?>
+
+    'start_capture()' and 'stop_capture()' are still available but not recommended.
+
+    New helper 'capture_as()' allows you to nest capturing which is
+    impossible with 'start_capture()' and 'stop_capture()'.
+
+  * If 'trace=True' is passed to Template class (or Engine class), output
+    string will contain template file name. For example:
+
+       <!-- ***** begin: hello.pyhtml ***** -->
+       <div class="content">
+         <p>Hello World!</p>
+       </div>
+       <!-- ***** end: hello.pyhtml ***** -->
+
+  * tenjin.Engine now helps M17N of templates. If you pass 'lang' option to
+    Engine, it will generates cache files for each langs from a file.
+    This feature is intened to use with preprocessing in order to reduce
+    catalog expantion cost (such as '${_("Hello")}')
+
+        ## for lang='en'
+        engine_en = tenjin.Engine(lang='en', preprocess=True)
+	engine_en.render('index.pyhtml')  # generates 'index.pyhtml.en.cache'
+        ## for lang='fr'
+        engine_fr = tenjin.Engine(lang='fr', preprocess=True)
+	engine_fr.render('index.pyhtml')  # generates 'index.pyhtml.fr.cache'
+
+  * (Experimental) New html helper 'js_link()'.
+
+        >>> from tenjin.html import *
+	>>> js_link('click', 'alert("OK")', klass='link')
+	'<a href="javascript:undefined" onclick="alert(&quot;OK&quot;);return false" class="link">click</a>'
+
+
+* [Changes]
+
+  * (IMPORTANT!!) You must close statement block of 'if', 'for', 'with', ...
+    with corresponding '#endif', '#endfor', '#endwith', and so on.
+    Notice that '#end' is available as almighty closer.
+
+  * (IMPORTANT!!) tenjin.GaeMemcacheCacheStorage is removed (this is already
+    announced in the previous release).
+    Please use tenjin.gae.GaeMemcacheStorage instead.
+
+  * 'tenjin.helpers.html' module is renamed to 'tenjin.html', but old module
+    name is still available for backward compatibility.
+
+  * escape_html() (and escape()) now escapes "'" into "&#39;".
+
+  * new_cycle() is moved from tenjin.helpers.html module to tenjin.helpers
+    module because it is not only for HTML.
+
+  * In GAE environment, Tenjin uses '1.1' as dummy value of CURRENT_VERSION_ID
+    when it is not provided. This prevents error when using GAE and tenjin
+    on test environment.
+
+  * Python 2.3 is now unsupported. (Python 2.4 is still supported because
+    CentOS uses Python 2.4).
+
+  * (internal) Tenjin.escape_expr_and_escapeflag() is changed to
+    Tenjin.escape_expr_and_flags().
+
+  * (internal) Tenjin.add_expr() is changed to take 'flags' argument.
+
+  * (internal) 'tenjin.__release__' is renamed to 'tenjin.__version__'.
+
+
+* [Bugfixes]
+
+  * Cache file saving was failed on Windows because existing file should be
+    removed before renaming file. (patched by elishowk, thank you!)
+
+
+
+Release 0.9.0 (2010-07-19)
+--------------------------
+
+* [Enhancements]
+
+  * Performance improved (about 5%).
+
+  * (IMPORTANT!!)
+    Fragment cache supported.
+    See
+      http://www.kuwata-lab.com/tenjin/pytenjin-users-guide.html#fragment-cache
+    for details.
+
+  * (IMPORTANT!!)
+    include() now takes keyword arguments as local variables.
+    ex.
+      <?py include('header.pyhtml', title='Example') ?>
+
+  * Add new module 'tenjin.gae'.
+
+  * Add 'input' argument to tenjin.Template() to create template object without file.
+    ex.
+      input = "<p>Hello ${name}</p>"
+      t = tenjin.Template(None, input=input)
+      html = t.render({'name': 'World'})
+
+  * Add tenjin.Engine.add_template() to add template object explicitly.
+
+  * User's guide (doc/users-guide.html) is rewrited entirely.
+
+  * Add benchmark for Jinja2.
+
+
+* [Changes]
+
+  * (IMPORTANT!!)
+    It is strongly recommended to close 'if', 'for', 'while', ... by
+    corresponding '#endif', '#endfor', '#endwhile', and so on.
+    See
+      http://www.kuwata-lab.com/tenjin/pytenjin-users-guide.html#planned-changes
+    for details.
+
+  * (IMPORTANT!!)
+    Google App Engine support is changed. All you have to do is to call
+    tenjin.gae.init() at first.
+    See
+      http://www.kuwata-lab.com/tenjin/pytenjin-users-guide.html#google-appengine
+    for details.
+
+  * (IMPORTANT!!)
+    tenjin.Engine is changed to share a cache storage between engines by default.
+    This improves performance of Tenjin but your test scripts may get errors.
+    If you get errors in your test scripts, clear cache storage for each test.
+
+        def setUp(self):
+	    tenjin.Engine.cache.clear()
+
+    If you prefer previous behaviour, set tenjin.Engine.cache to None.
+
+        ## create new MarshalCacheStorage object for each engine
+        tenjin.Engine.cache = None
+    
+  * Now you can set default template class to tenjin.Engine.templateclass.
+    ex.
+      tenjin.Engine.templateclass = MyTemplate
+
+  * 'cache' argument of tenjin.Engine() is changed.
+     [old behaviour] if 'cache' is None, cache template object into memory.
+     [new behaviour] if 'cache' is None, use default cache storage.
+
+  * Default preamble is changed from "print ''.join(_buf)" to
+    "print(''.join(_buf))".
+
+  * 'doc/faq.html' is integrated into 'doc/users-guide.html'.
+
+  * All test scripts are changed to import oktest instead of unittest.
+
+
+* [Bugfixes]
+
+  * Fixed to set correct file path of template object which is loaded from cache.
+
+  * Fixed a bug that 'pytenjin -sbN' didn't trim line number on the last line
+
+
+
+Release 0.8.1 (2009-06-14)
+--------------------------
+
+* [Bugfix]
+
+  * Fix bugs on CacheStorage#unset(). (thanks Steve)
+
+  * Fix tenjin.helpers.html.new_cycle() to work on Python 3.0.
+
+* [Changes]
+
+  * Update 'doc/faq.html' and add new section.
+    'Is it possible to change indent restriction more flexible?'
+    http://www.kuwata-lab.com/tenjin/pytenjin-faq.html#faq-flexibleindent
+
+
+
+Release 0.8.0 (2009-06-07)
+--------------------------
+
+* [Bugfix]
+
+  * !!IMPORTANT!!
+    Template caching is changed to keep template file's timestamp
+    instead of create time of cached object. See
+    http://groups.google.com/group/kuwata-lab-products/browse_thread/thread/a0d447c282fb383d#msg_de39557405c9b656
+    for details. (Thanks Steve)
+
+* [Changes]
+
+  * !!IMPORTANT!!
+    HTML helper function 'tagattr()' is renamed to 'tagattrs()'.
+    (Notice that new 'tagattr()' is added. See below.)
+
+  * 'tagattrs()' is changed to add ' ' (space) at the first character.
+    ex.
+      (0.7.0)  tagattr(klass='error')     #=> 'class="error"'
+      (0.7.1)  tagattrs(klass='error')    #=> ' class="error"'
+
+  * 'tagattrs()' is changed to handle 'checked', 'selected', and
+    'disabled' attributes.
+    ex.
+       >>> from tenjin.helpers.html import *
+       >>> tagattrs(checked=True, selected='Y', disabled=1)
+       ' checked="checked" selected="selected" disabled="disabled"'
+       >>> tagattrs(checked=False, selected='', disabled=0)
+       ''
+
+* [Enhancements]
+
+  * Add new HTML helper function 'tagattr()'.
+    (Notice that 'tagattr()' in 0.7.0 is renamed into 'tagattrs()'.)
+    ex.
+      >>> from tenjin.helpers.html import *
+      >>> tagattr('size', 20)
+      ' size="20"'
+      >>> tagattr('size', 0)
+      ''
+      >>> tagattr('size', 20, 'large')
+      ' size="large"'
+      >>> size = 20        # you can use tagattrs() instead of tagattr()
+      >>> tagattrs(size=(size and 'large'))
+      ' size="large"'
+
+  * Add new HTML helper function 'new_cycle()'.
+    ex.
+      >>> from tenjin.helpers.html import *
+      >>> cycle = new_cycle('odd, 'even')
+      >>> cycle()
+      'odd'
+      >>> cycle()
+      'even'
+      >>> cycle()
+      'odd'
+      >>> cycle()
+      'even'
+
+  * (experimental) Template converter is changed to add dummy if-statement
+    when first Python statement is indented. (Thanks Steve)
+    ex.
+      $ cat ex.pyhtml
+      <html>
+        <body>
+          <ul>
+            <?py for item in items: ?>
+            <li>${item}</li>
+            <?py #end ?>
+          </ul>
+        </body>
+      </html>
+      $ pytenjin -sb ex.pyhtml
+      _buf.extend(('''<html>
+        <body>
+          <ul>\n''', ));
+      if True: ## dummy
+            for item in items:
+                _buf.extend(('''      <li>''', escape(to_str(item)), '''</li>\n''', ));
+            #end
+            _buf.extend(('''    </ul>
+        </body>
+      </html>\n''', ));
+
+  * Update User's Guide and FAQ.
+
+
+
+Release 0.7.0 (2009-05-24)
+--------------------------
+
+* [Enhancements]
+
+  * Python 3.0 is now supported officially.
+
+  * Google AppEngine (GAE) supported.
+    You can use pyTenjin on Google AppEngine with memcache.
+    See FAQ: 'Is pyTenjin ready for Google App Engine?' section.
+    http://www.kuwata-lab.com/tenjin/pytenjin-faq.html#faq-google-appengine
+
+  * Logging support.
+    ex:
+
+      import logging
+      logging.basicConfig(level=logging.DEBUG)
+      tenjin.logger = logging
+      tenjin.Engine().render('index.pyhtml')  # report some messages
+
+  * enerate_tostrfun() can take not only encode-encoding but also
+    decode-encoding. These are exclusive.
+
+    ex:
+      ## convert unicode object into binary(=str)
+      to_str = tenjin.generate_tostrfunc(encode='utf-8')
+      ## convert binary(=str) into unicode object
+      to_str = tenjin.generate_tostrfunc(decode='utf-8')
+
+  * (Experimental) HTML helper functions are now provided.
+    ex:
+
+      >>> import tenjin
+      >>> from tenjin.helpers.html import *
+      >>> checked(1==1)
+      ' checked="checked"'
+      >>> checked(1==0)
+      ''
+      >>> selected(1==1)
+      ' selected="selected"'
+      >>> tagattr(klass='error', style='color:red')
+      'class="error" style="color:red"'
+      >>> tagattr(width='', height=0)
+      ''
+      >>> nv('rank', 'A')      # name and value
+      'name="rank" value="A"'
+      >>> nv('rank', 'A', '.', klass='opt')
+      'name="rank" value="A" id="rank.A" class="opt"'
+
+  * New command-line option '-a cache' supported.
+    This option enables you to generate template cache files in advance.
+
+  * You can share caches between all engine objects.
+    PyTenjin now uses full-path of template file as key of cache.
+    So you can share caches between engines which have different
+    search path.
+    ex:
+
+      shared = tenjin.MarshalCacheStorage()
+      engine1 = tenjin.Engine(path=['views/books', 'views'], cache=shared)
+      engine2 = tenjin.Engine(path=['views/authors', 'views'], cache=shared)
+
+  * Pickle-base and text-base template caching support.
+    If you pass 'cache=tenjin.PickleCacheStorage()' or
+    'cache=tenjin.TextCacheStorage()' option to template.Engine(),
+    pyTenjin creates pickle-base or text-base cache files instead of
+    marshal-base caches.
+    These are useful in environment in which marshal module is
+    not available, such as Google AppEngine.
+
+* [Changes]
+
+  * 'cache' option for tenjin.Engine() changed.
+    (0.6.2)
+      cache=True  :  cached both in memory and file (marshal-based)
+      cache=None  :  same as cache=True
+      cache=False :  cached in meory but not in file
+    (0.7.0)
+      cache=True  :  cached both in memory and file (marshal-based)
+      cache=None  :  cached in meory but not in file
+      cache=False :  never cached both in memory nor file
+
+  * to_str() is changed to encode unicode object into binary(=str)
+    using utf-8 encoding in default.
+    In short:
+
+      to_str = generate_tostrfunc(encode='utf-8')   # 0.7.0
+      to_str = generate_tostrfunc(encode=None)      # 0.6.2
+
+  * Benchmark script now skips to do benchmark template libraries
+    which are failed to import.
+
+* [BugFix]
+
+  * In preprocessing, error was raised when expression is not string.
+    Now fixed.
+
+
+Release 0.6.2 (2008-02-27)
+--------------------------
+
+* [Changes]
+
+  * Package name is changed from 'pyTenjin' to 'Tenjin'
+
+  * When '-S', '-a retrieve', '-X', or '-a statements' specified,
+    pytenjin command replaces text before expressions into spaces
+    and print it.
+
+* [Bugfix]
+
+  * pytenjin command printed "\n\n" instead of "\n" when '-U' specified.
+    Fixed to print "\n".
+
+
+Release 0.6.1 (2007-10-23)
+--------------------------
+
+* [Enhancements]
+
+  * Benchmark script (benchmark/bench.py) is rewrited.
+
+  * Benchmark supports Genshi, Mako, and Templetor.
+
+  * Add examples.
+
+* [Bugfix]
+
+  * Typo in User's Guide is fixed.
+
+
+Release 0.6.0 (2007-08-04)
+--------------------------
+
+* first release

@@ -1,0 +1,9 @@
+$ python main.py
+<div>
+  <ul>
+    <li>AAA</li>
+    <li>BBB</li>
+    <li>CCC</li>
+  </ul>
+</div>
+

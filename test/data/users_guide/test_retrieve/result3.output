@@ -1,0 +1,11 @@
+$ pytenjin -NXb example.pyhtml
+    1:  _extend=_buf.extend;_to_str=to_str;_escape=escape; 
+    2:  i = 0
+    3:  for item in items:
+    4:      i += 1
+    5:  
+    6:  
+    7:  
+    8:  
+    9:  #endfor
+   10:  

@@ -1,0 +1,2 @@
+$ pytenjin --preprocess -sb views/pp-example3.pyhtml
+_extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<a href="/items/show/''', _to_str(params["id"]), '''">Show ''', _escape(_to_str(params["name"])), '''</a>\n''', ));

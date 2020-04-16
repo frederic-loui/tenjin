@@ -1,0 +1,2 @@
+$ pytenjin -z views/*.pyhtml
+views/page.pyhtml - ok.

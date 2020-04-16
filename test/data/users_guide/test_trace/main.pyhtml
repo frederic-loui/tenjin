@@ -1,0 +1,6 @@
+<?py #@ARGS items ?>
+<ul>
+  <?py for item in items: ?>
+  <li>${item}</li>
+  <?py #end ?>
+</ul>

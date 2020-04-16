@@ -1,0 +1,1011 @@
+##
+##
+##
+
+
+###
+
+- name:  basic
+  contexts:
+   "list":
+      title:      Users List
+      items:
+        - name:   Robert
+          email:  bob@example.com
+          gender: m
+        - name:   Margalette
+          email:  meg@example.com
+          gender: w
+        - name:   William
+          email:  bill@example.com
+          gender: m
+   "show":
+      title:      Show User
+      item:
+        name:     Robert
+        email:    bob@example.com
+        gender:   m
+   "create":
+      title:      Create User
+      params:
+        name:
+        email:
+        gender:
+   "edit":
+      title:      Edit User
+      params:
+        name:     Robert
+        email:    bob@example.com
+        gender:   m
+
+  templates:
+  
+    - filename: user_layout.xxhtml
+      content: |
+          <html>
+            <body>
+              <h1>${title}</h1>
+              <div id="sidemenu">
+          <?py include(':sidemenu') ?>
+              </div>
+              <div id="maincontent">
+          #{_content}
+              </div>
+              <div id="footer">
+          #{include('footer.html', False)}
+              </div>
+            </body>
+          </html>
+  
+    - filename: user_list.xxhtml
+      content: |
+          <ul>
+          <?py for item in items: ?>
+            <li>${item['name']}
+                (${item['email']})</li>
+          <?py #end ?>
+          </ul>
+  
+    - filename: user_show.xxhtml
+      content: |
+          <p>
+            Name: ${item['name']}<br />
+            Email: ${item['email']}
+          </p>
+  
+    - filename: user_form.xxhtml
+      content: |
+          <p>
+            Name: <input type="input" name="name" value="${params['name']}" />
+          </p>
+          <p>
+            Email: <input type="input" name="email" value="${params['email']}" />
+          </p>
+  
+    - filename: user_create.xxhtml
+      desc:     import()
+      content: |
+          <form action="create" method="post">
+          <?py include(':form') ?> 
+            <input type="submit" value="Create" />
+          </form>
+  
+    - filename: user_edit.xxhtml
+      desc:     import(append=false)
+      content: |
+          <form action="edit" method="post">
+          #{include('user_form.pyhtml', False)}
+            <input type="submit" value="Edit" />
+          </form>
+  
+    - filename: user_sidemenu.xxhtml
+      desc:     _engine.render()
+      content: |
+          <a href="/user/list">List</a><br />
+          <a href="/user/create">Create</a><br />
+  
+    - filename: footer.html
+      desc:     _engine.evaluate()
+      content: |
+          <hr />
+          <address>
+            copyright&copy;2007 kuwata-lab.com
+          </address>
+  
+  expected:
+  
+    - name:     user_list_nolayout
+      content: |
+          <ul>
+            <li>Robert
+                (bob@example.com)</li>
+            <li>Margalette
+                (meg@example.com)</li>
+            <li>William
+                (bill@example.com)</li>
+          </ul>
+  
+    - name:     user_show_nolayout
+      content: |
+          <p>
+            Name: Robert<br />
+            Email: bob@example.com
+          </p>
+  
+    - name:     user_create_nolayout
+      content: |
+          <form action="create" method="post">
+          <p>
+            Name: <input type="input" name="name" value="" />
+          </p>
+          <p>
+            Email: <input type="input" name="email" value="" />
+          </p>
+            <input type="submit" value="Create" />
+          </form>
+  
+    - name:     user_edit_nolayout
+      content: |
+          <form action="edit" method="post">
+          <p>
+            Name: <input type="input" name="name" value="Robert" />
+          </p>
+          <p>
+            Email: <input type="input" name="email" value="bob@example.com" />
+          </p>
+  
+            <input type="submit" value="Edit" />
+          </form>
+  
+    - name:     user_list_withlayout
+      content: |
+          <html>
+            <body>
+              <h1>Users List</h1>
+              <div id="sidemenu">
+          <a href="/user/list">List</a><br />
+          <a href="/user/create">Create</a><br />
+              </div>
+              <div id="maincontent">
+          <ul>
+            <li>Robert
+                (bob@example.com)</li>
+            <li>Margalette
+                (meg@example.com)</li>
+            <li>William
+                (bill@example.com)</li>
+          </ul>
+  
+              </div>
+              <div id="footer">
+          <hr />
+          <address>
+            copyright&copy;2007 kuwata-lab.com
+          </address>
+  
+              </div>
+            </body>
+          </html>
+  
+    - name:     user_show_withlayout
+      content: |
+          <html>
+            <body>
+              <h1>Show User</h1>
+              <div id="sidemenu">
+          <a href="/user/list">List</a><br />
+          <a href="/user/create">Create</a><br />
+              </div>
+              <div id="maincontent">
+          <p>
+            Name: Robert<br />
+            Email: bob@example.com
+          </p>
+  
+              </div>
+              <div id="footer">
+          <hr />
+          <address>
+            copyright&copy;2007 kuwata-lab.com
+          </address>
+          
+              </div>
+            </body>
+          </html>
+  
+    - name:     user_create_withlayout
+      content: |
+          <html>
+            <body>
+              <h1>Create User</h1>
+              <div id="sidemenu">
+          <a href="/user/list">List</a><br />
+          <a href="/user/create">Create</a><br />
+              </div>
+              <div id="maincontent">
+          <form action="create" method="post">
+          <p>
+            Name: <input type="input" name="name" value="" />
+          </p>
+          <p>
+            Email: <input type="input" name="email" value="" />
+          </p>
+            <input type="submit" value="Create" />
+          </form>
+  
+              </div>
+              <div id="footer">
+          <hr />
+          <address>
+            copyright&copy;2007 kuwata-lab.com
+          </address>
+  
+              </div>
+            </body>
+          </html>
+  
+    - name:     user_edit_withlayout
+      content: |
+          <html>
+            <body>
+              <h1>Edit User</h1>
+              <div id="sidemenu">
+          <a href="/user/list">List</a><br />
+          <a href="/user/create">Create</a><br />
+              </div>
+              <div id="maincontent">
+          <form action="edit" method="post">
+          <p>
+            Name: <input type="input" name="name" value="Robert" />
+          </p>
+          <p>
+            Email: <input type="input" name="email" value="bob@example.com" />
+          </p>
+  
+            <input type="submit" value="Edit" />
+          </form>
+  
+              </div>
+              <div id="footer">
+          <hr />
+          <address>
+            copyright&copy;2007 kuwata-lab.com
+          </address>
+  
+              </div>
+            </body>
+          </html>
+
+
+### -- for capture test
+
+- name:  test_capture_and_echo
+  layout: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+          <head>
+            <title>${title}</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <link rel="stylesheet" type="text/css" href="style.css" />
+          </head>
+          <body>
+            <h1>${title}</h1>
+        
+            <div id="main_content">
+        <?py echo(main_content) ?>
+            </div>
+        
+            <div id="footer">
+        <?py echo(footer) ?>
+            </div>
+        
+          </body>
+        </html>
+
+  content: |
+        <html>
+          <body>
+            <h1><?py
+        start_capture('title')
+        ?>Capturing Example<?py
+        stop_capture()
+        ?></h1>
+        
+        <?py start_capture('main_content') ?>
+            <table>
+        <?py for i, item in enumerate(items): ?>
+        <?py     color = i % 2 == 0 and '#FFCCCC' or '#CCCCFF' ?>
+              <tr bgcolor="#{color}">
+                <td>${item}</td>
+              </tr>
+        <?py #endfor ?>
+            </table>
+        <?py stop_capture(False) ?>
+        <?py _context['main_content'] = main_content ?>
+        
+        <?py start_capture() ?>
+            <hr>
+            <address>
+              <a href="mailto:webmaster@example.com">webmaster@example.com</a>
+            </address>
+        <?py _context['footer'] = stop_capture(False) ?>
+        
+          </body>
+        </html>
+
+  expected: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+                  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+          <head>
+            <title>Capturing Example</title>
+            <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+            <link rel="stylesheet" type="text/css" href="style.css" />
+          </head>
+          <body>
+            <h1>Capturing Example</h1>
+        
+            <div id="main_content">
+            <table>
+              <tr bgcolor="#FFCCCC">
+                <td>AAA</td>
+              </tr>
+              <tr bgcolor="#CCCCFF">
+                <td>BBB</td>
+              </tr>
+              <tr bgcolor="#FFCCCC">
+                <td>CCC</td>
+              </tr>
+            </table>
+            </div>
+        
+            <div id="footer">
+            <hr>
+            <address>
+              <a href="mailto:webmaster@example.com">webmaster@example.com</a>
+            </address>
+            </div>
+        
+          </body>
+        </html>
+
+
+### -- for captured_as() function test
+
+- name:  test_captured_as
+  baselayout: |
+        <html>
+         <body>
+        
+          <!-- HEADER -->
+        <?py if not captured_as('header_part'): ?>
+           <img src="img/logo.png" alt="logo" ?>
+        <?py #end ?>
+          <!-- /HEADER -->
+        
+          <!-- CONTENT -->
+        <?py _buf.append(content_part) ?>
+          <!-- /CONTENT -->
+        
+          <!-- FOOTER -->
+        <?py if not captured_as('footer_part'): ?>
+           <hr />
+           <em>webmaster@example.com</em>
+        <?py #end ?>
+          <!-- /FOOTER -->
+          
+         </body>
+        </html>
+
+  customlayout: |
+        <?py _context['_layout'] = 'baselayout.pyhtml' ?>
+        
+        <?py start_capture('footer_part') ?>
+        <address style="text-align:right">
+          copyright&copy; 2007 kuwata-lab all rights reserved<br />
+          <a href="webmaster&#64;kuwata-lab.com">webmaster&#64;kuwata-lab.com</a>
+        </address>
+        <?py stop_capture() ?>
+
+  content: |
+        <?py _context['_layout'] = 'customlayout.pyhtml' ?>
+        
+        <?py start_capture('content_part') ?>
+        <ul>
+        <?py for item in items: ?>
+          <li>${item}</li>
+        <?py #end ?>
+        </ul>
+        <?py stop_capture() ?>
+
+  context: { items: ['AAA', 'BBB', 'CCC'] }
+  expected: |
+        <html>
+         <body>
+        
+          <!-- HEADER -->
+           <img src="img/logo.png" alt="logo" ?>
+          <!-- /HEADER -->
+        
+          <!-- CONTENT -->
+        <ul>
+          <li>AAA</li>
+          <li>BBB</li>
+          <li>CCC</li>
+        </ul>
+          <!-- /CONTENT -->
+        
+          <!-- FOOTER -->
+        <address style="text-align:right">
+          copyright&copy; 2007 kuwata-lab all rights reserved<br />
+          <a href="webmaster&#64;kuwata-lab.com">webmaster&#64;kuwata-lab.com</a>
+        </address>
+          <!-- /FOOTER -->
+          
+         </body>
+        </html>
+
+
+
+### -- for local layout test
+
+#local_layout_test:
+- name:  test_local_layout
+  layout_html: |
+        <html>
+          <body>
+        #{_content}
+          </body>
+        </html>
+
+  layout_xhtml: |
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+          <body>
+        #{_content}
+          </body>
+        </html>
+
+  content_html: |
+        <h1>hello #{user}!</h1>
+
+  context:   { user: world }
+
+  expected_nolayout: |
+        <h1>hello world!</h1>
+
+  expected_html: |
+        <html>
+          <body>
+        <h1>hello world!</h1>
+        
+          </body>
+        </html>
+
+  expected_xhtml: |
+        <?xml version="1.0" encoding="UTF-8" ?>
+        <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+          <body>
+        <h1>hello world!</h1>
+        
+          </body>
+        </html>
+
+
+### -- for caching test
+
+#caching_test:
+- name:  test_cachefile
+  desc:  mtime of cachefile
+  layout: |
+        <html>
+          <head>
+            <title>${title}</title>
+          </head>
+          <body>
+            <h1>${title}</h1>
+            <div id="content">
+        #{_content}
+            </div>
+          </body>
+        </html>
+
+  page: |6
+        <?py _context['title'] = 'Create Account' ?>
+        <form action="create" method="post">
+        <?py include(':form') ?>
+          <input type="submit" value="Create" />
+        </form>
+
+  form: |6
+          <p>
+            Account:
+            <input type="text" name="account" value="${params.get('account')}" />
+          </p>
+          <p>
+            Password:
+            <input type="text" name="password" value="${params.get('password')}" />
+          </p>
+
+  expected: |
+        <html>
+          <head>
+            <title>Create Account</title>
+          </head>
+          <body>
+            <h1>Create Account</h1>
+            <div id="content">
+        <form action="create" method="post">
+          <p>
+            Account:
+            <input type="text" name="account" value="" />
+          </p>
+          <p>
+            Password:
+            <input type="text" name="password" value="" />
+          </p>
+          <input type="submit" value="Create" />
+        </form>
+        
+            </div>
+          </body>
+        </html>
+
+
+### -- for layout inheritance test
+
+#change_layout:
+- name:  test_change_layout
+
+  baselayout: |
+        <html>
+          <body>
+        <?py if 'title' in _context: ?>
+            <h1>${title}</h1>
+        <?py #end ?>
+        <?py _buf.append(_content) ?>
+          </body>
+        </html>
+
+  customlayout: |
+        <?py ## use default layout template name ?>
+        <?py _context['_layout'] = True ?>
+        <div id="content">
+        <?py _buf.append(_content) ?>
+        </div>
+
+  content: |
+        <?py _context['title'] = 'Changing Layout Template Test' ?>
+        <?py ## specify layout template name ?>
+        <?py _context['_layout'] = 'customlayout.pyhtml' ?>
+        foo
+        bar
+        baz
+
+  expected: |
+        <html>
+          <body>
+            <h1>Changing Layout Template Test</h1>
+        <div id="content">
+        foo
+        bar
+        baz
+        </div>
+          </body>
+        </html>
+
+
+## -- context_scope
+- name:  test_context_scope
+  desc:  context scope
+  base: |
+        <?py _context['x1'] = 10 ?>
+        <?py x2 = 20 ?>
+        <?py include('part.pyhtml') ?>
+        [base] _context.get('y1') = #{repr(_context.get('y1'))}
+        [base] _context.get('y2') = #{repr(_context.get('y2'))}
+        [base] locals().get('y1') = #{repr(locals().get('y1'))}
+        [base] locals().get('y2') = #{repr(locals().get('y2'))}
+
+  part: |
+        [part] _context.get('x1') = #{repr(_context.get('x1'))}
+        [part] _context.get('x2') = #{repr(_context.get('x2'))}
+        [part] locals().get('x1') = #{repr(locals().get('x1'))}
+        [part] locals().get('x2') = #{repr(locals().get('x2'))}
+        <?py _context['y1'] = 30 ?>
+        <?py y2 = 40 ?>
+
+  expected: |
+        [part] _context.get('x1') = 10
+        [part] _context.get('x2') = None
+        [part] locals().get('x1') = 10
+        [part] locals().get('x2') = None
+        [base] _context.get('y1') = 30
+        [base] _context.get('y2') = None
+        [base] locals().get('y1') = None
+        [base] locals().get('y2') = None
+#       _context.get('x1') = None
+#       _context.get('x2') = 20
+#       locals().get('x1') = None
+#       locals().get('x2') = 20
+#       _context.get('y1') = None
+#       _context.get('y2') = None
+#       locals().get('y1') = 30
+#       locals().get('y2') = None
+
+
+## -- template args
+- name:  test_template_args
+  content: |
+        <?py #@ARGS a ?>
+        a = #{repr(a)}
+        b = #{repr(b)}
+
+  exception: NameError
+  errormsg: name 'b' is not defined
+
+  context: { a: 10, b: 20 }
+
+  expected: |
+        a = 10
+        b = 20
+
+
+## -- template args are stored into and loaded from cache file?
+- name:  test_cached_contents
+  desc:  cached script and args are stored into/loaded from cachefile correctly?
+  input1: |
+	<p>
+	<?py #@ARGS x,y  ,  z?>
+	  x = #{x}, y = #{y}, z = #{z}
+	</p>
+
+  script1: |6
+	_extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<p>\n''', ));
+	x = _context.get('x'); y = _context.get('y'); z = _context.get('z'); 
+	_extend(('''  x = ''', _to_str(x), ''', y = ''', _to_str(y), ''', z = ''', _to_str(z), '''
+	</p>\n''', ));
+
+  cache1: |
+	_extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<p>\n''', ));
+	x = _context.get('x'); y = _context.get('y'); z = _context.get('z'); 
+	_extend(('''  x = ''', _to_str(x), ''', y = ''', _to_str(y), ''', z = ''', _to_str(z), '''
+	</p>\n''', ));
+
+  args1: [ x, y, z ]
+
+  input2: |
+	<p>
+	<?py #@ARGS ?>
+	  x = #{x}, y = #{y}, z = #{z}
+	</p>
+
+  script2: |6
+	_extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<p>\n''', ));
+	
+	_extend(('''  x = ''', _to_str(x), ''', y = ''', _to_str(y), ''', z = ''', _to_str(z), '''
+	</p>\n''', ));
+
+  cache2: |6
+	_extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<p>\n''', ));
+	
+	_extend(('''  x = ''', _to_str(x), ''', y = ''', _to_str(y), ''', z = ''', _to_str(z), '''
+	</p>\n''', ));
+
+  args2: [ ]
+
+
+## -- for template path test
+- name:  test_template_path
+  common_layout: |
+        <html>
+          <body>
+        #{_content}
+        <?py include(':footer') ?>
+          </body>
+        </html>
+
+  common_body: |
+        <ul>
+        <?py for item in items: ?>
+          <li>${item}</li>
+        <?py #end ?>
+        </ul>
+
+  common_footer: |
+        <hr />
+        <address>
+          <a href="mailto:webmaster@localhost">webmaster@localhost</a>
+        </address>
+
+  user_layout: |
+        <?xml version="1.0" ?>
+        <html xml:lang="en">
+          <body>
+        <?py _buf.append(_content) ?>
+        <?py include(':footer') ?>
+          </body>
+        </html>
+
+  user_body: |
+        <table>
+        <?py for item in items: ?>
+          <tr><td>${item}</td></tr>
+        <?py #end ?>
+        </table>
+
+  user_footer: |
+        <div class="footer" style="margin-top: 20px; background-color: gray">
+          <a href="mailto:webmaster@localhost">webmaster@localhost</a>
+        </div>
+
+  expected_common_common_common: |
+        <html>
+          <body>
+        <ul>
+          <li>AAA</li>
+          <li>BBB</li>
+          <li>CCC</li>
+        </ul>
+        
+        <hr />
+        <address>
+          <a href="mailto:webmaster@localhost">webmaster@localhost</a>
+        </address>
+          </body>
+        </html>
+
+  expected_user_common_common: |
+        <?xml version="1.0" ?>
+        <html xml:lang="en">
+          <body>
+        <ul>
+          <li>AAA</li>
+          <li>BBB</li>
+          <li>CCC</li>
+        </ul>
+        <hr />
+        <address>
+          <a href="mailto:webmaster@localhost">webmaster@localhost</a>
+        </address>
+          </body>
+        </html>
+
+  expected_common_user_common: |
+        <html>
+          <body>
+        <table>
+          <tr><td>AAA</td></tr>
+          <tr><td>BBB</td></tr>
+          <tr><td>CCC</td></tr>
+        </table>
+        
+        <hr />
+        <address>
+          <a href="mailto:webmaster@localhost">webmaster@localhost</a>
+        </address>
+          </body>
+        </html>
+
+  expected_user_user_common: |
+        <?xml version="1.0" ?>
+        <html xml:lang="en">
+          <body>
+        <table>
+          <tr><td>AAA</td></tr>
+          <tr><td>BBB</td></tr>
+          <tr><td>CCC</td></tr>
+        </table>
+        <hr />
+        <address>
+          <a href="mailto:webmaster@localhost">webmaster@localhost</a>
+        </address>
+          </body>
+        </html>
+
+  expected_common_common_user: |
+        <html>
+          <body>
+        <ul>
+          <li>AAA</li>
+          <li>BBB</li>
+          <li>CCC</li>
+        </ul>
+        
+        <div class="footer" style="margin-top: 20px; background-color: gray">
+          <a href="mailto:webmaster@localhost">webmaster@localhost</a>
+        </div>
+          </body>
+        </html>
+
+  expected_user_common_user: |
+        <?xml version="1.0" ?>
+        <html xml:lang="en">
+          <body>
+        <ul>
+          <li>AAA</li>
+          <li>BBB</li>
+          <li>CCC</li>
+        </ul>
+        <div class="footer" style="margin-top: 20px; background-color: gray">
+          <a href="mailto:webmaster@localhost">webmaster@localhost</a>
+        </div>
+          </body>
+        </html>
+
+  expected_common_user_user: |
+        <html>
+          <body>
+        <table>
+          <tr><td>AAA</td></tr>
+          <tr><td>BBB</td></tr>
+          <tr><td>CCC</td></tr>
+        </table>
+        
+        <div class="footer" style="margin-top: 20px; background-color: gray">
+          <a href="mailto:webmaster@localhost">webmaster@localhost</a>
+        </div>
+          </body>
+        </html>
+
+  expected_user_user_user: |
+        <?xml version="1.0" ?>
+        <html xml:lang="en">
+          <body>
+        <table>
+          <tr><td>AAA</td></tr>
+          <tr><td>BBB</td></tr>
+          <tr><td>CCC</td></tr>
+        </table>
+        <div class="footer" style="margin-top: 20px; background-color: gray">
+          <a href="mailto:webmaster@localhost">webmaster@localhost</a>
+        </div>
+          </body>
+        </html>
+
+
+## -- preprocessor
+
+- name:  test_preprocessor
+  testopts:  { preprocess: true }
+  form: |
+        <?PY states = { "CA": "California", ?>
+        <?PY            "NY": "New York", ?>
+        <?PY            "FL": "Florida", } ?>
+        <?PY # ?>
+        <?py chk = { params['state']: ' checked="checked"' } ?>
+        <?PY codes = list(states.keys()) ?>
+        <?PY codes.sort() ?>
+        <select name="state">
+          <option value="">-</option>
+        <?PY for code in codes: ?>
+          <option value="#{{code}}"#{chk.get(#{{repr(code)}}, '')}>${{states[code]}}</option>
+        <?PY #endfor ?>
+        </select>
+
+  create: |
+        <?PY label = '"Create"' ?>
+        <form action="#{{action}}">
+        <?py include(':form') ?>
+          <input type="submit" value="${{label}}">
+        </form>
+
+  update: |
+        <form action="#{{action}}">
+        <?PY label = '"Update"' ?>
+        <?PY include(':form') ?>
+          <input type="submit" value="${{label}}">
+        </form>
+
+  layout: |
+        <html>
+          <body>
+            <h1>${title}</h1>
+        <?py echo(_content) ?>
+          </body>
+        </html>
+
+  expected1: |
+        <html>
+          <body>
+            <h1>Create</h1>
+        <form action="create">
+        <select name="state">
+          <option value="">-</option>
+          <option value="CA">California</option>
+          <option value="FL">Florida</option>
+          <option value="NY" checked="checked">New York</option>
+        </select>
+          <input type="submit" value="&quot;Create&quot;">
+        </form>
+          </body>
+        </html>
+
+  expected2: |
+        <html>
+          <body>
+            <h1>Update</h1>
+        <form action="update">
+        <select name="state">
+          <option value="">-</option>
+          <option value="CA">California</option>
+          <option value="FL">Florida</option>
+          <option value="NY" checked="checked">New York</option>
+        </select>
+          <input type="submit" value="&quot;Update&quot;">
+        </form>
+          </body>
+        </html>
+
+  cache1: |
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; chk = { params['state']: ' checked="checked"' }
+        _extend(('''<select name="state">
+          <option value="">-</option>
+          <option value="CA"''', _to_str(chk.get('CA', '')), '''>California</option>
+          <option value="FL"''', _to_str(chk.get('FL', '')), '''>Florida</option>
+          <option value="NY"''', _to_str(chk.get('NY', '')), '''>New York</option>
+        </select>\n''', ));
+
+  cache2: |
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<form action="create">\n''', ));
+        include(':form')
+        _extend(('''  <input type="submit" value="&quot;Create&quot;">
+        </form>\n''', ));
+
+  cache3: |
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<html>
+          <body>
+            <h1>''', _escape(_to_str(title)), '''</h1>\n''', ));
+        echo(_content)
+        _extend(('''  </body>
+        </html>\n''', ));
+
+  cache4: |
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<form action="update">
+        <select name="state">
+          <option value="">-</option>
+          <option value="CA">California</option>
+          <option value="FL">Florida</option>
+          <option value="NY" checked="checked">New York</option>
+        </select>
+          <input type="submit" value="&quot;Update&quot;">
+        </form>\n''', ));
+
+
+- name:  test_include_with_preprocess
+  testopts:  { preprocess: true }
+  index_html: |
+	## TODO (index.pyhtml)
+
+  show_html: |
+        ## TODO (show.pyhtml)
+
+  expected: |
+        value is 10
+        value is 20
+        value is 30
+
+
+## -- include() with kwargs
+
+- name:  test_include_with_kwargs
+  index_html: |
+        <div>
+        <?py assert 'x' not in _context ?>
+        <?py include('sub.pyhtml', x=10, y='foo') ?>
+        <?py assert 'x' not in _context ?>
+        </div>
+
+  sub_html: |
+        <?py assert 'x' in _context ?>
+        <p>x=#{x}</p>
+        <p>y=#{y}</p>
+
+  expected: |
+        <div>
+        <p>x=10</p>
+        <p>y=foo</p>
+        </div>

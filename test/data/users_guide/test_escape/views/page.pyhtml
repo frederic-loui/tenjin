@@ -1,0 +1,4 @@
+<p>
+  escaped:     ${value}
+  not escaped: #{value}
+</p>

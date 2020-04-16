@@ -1,0 +1,12 @@
+$ pytenjin -sb views/_layout.pyhtml
+_content = _context.get('_content'); page_title = _context.get('page_title'); 
+_extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<!DOCTYPE>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>''', _escape(_to_str(page_title)), '''</title>
+  </head>
+  <body>
+''', _to_str(_content), '''
+  </body>
+</html>\n''', ));

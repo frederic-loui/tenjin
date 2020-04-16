@@ -1,0 +1,16 @@
+$ python main.py
+<html>                        # by _layout.pyhtml
+  <body>                      #       :
+<h2>Blog Post Test</h2>       #   by _blog_layout.pyhtml
+<!-- content -->              #         :
+<div class="article">         #     by blog_post.pyhtml
+Foo<br />                     #           :
+Bar<br />                     #           :
+Baz                           #           :
+</div>                        #           :
+                              #           :
+<!-- /content -->             #   by _blog_layout.pyhtml
+                              #         :
+  </body>                     # by _layout.pyhtml
+</html>                       #       :
+

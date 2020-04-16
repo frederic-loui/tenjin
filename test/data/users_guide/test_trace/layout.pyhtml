@@ -1,0 +1,8 @@
+<?py #@ARGS _content ?>
+<html>
+  <body>
+    <div class="content">
+    <?py echo(_content) ?>
+    </div>
+  </body>
+</html>

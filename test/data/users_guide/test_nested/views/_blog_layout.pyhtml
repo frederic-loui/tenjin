@@ -1,0 +1,6 @@
+<?py #@ARGS _content, title ?>
+<?py _context['_layout'] = '_site_layout.pyhtml' ?>
+<h2>${title}</h2>
+<!-- content -->
+#{_content}
+<!-- /content -->

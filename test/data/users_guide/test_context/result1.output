@@ -1,0 +1,6 @@
+$ pytenjin -c 'items=["A","B","C"]' example.pyhtml
+<ul>
+  <li>A</li>
+  <li>B</li>
+  <li>C</li>
+</ul>

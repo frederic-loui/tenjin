@@ -1,0 +1,14 @@
+<?py #@ARGS page_title, environ ?>
+
+<h1>${page_title}</h1>
+
+<table class="list">
+  <tbody>
+    <?py cycle = new_cycle('odd', 'even') ?>
+    <?py for key in sorted(environ.keys()): ?>
+    <tr class="${cycle()}">
+      <th>${key}</th><td>${repr(environ[key])}</td>
+    </tr>
+    <?py #endfor ?>
+  </tbody>
+</table>

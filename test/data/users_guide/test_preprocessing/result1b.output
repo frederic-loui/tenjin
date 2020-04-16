@@ -1,0 +1,5 @@
+$ pytenjin -P -c 'value="My Great Example"' views/pp-example1.pyhtml
+## normal expression
+value = ${value}
+## with preprocessing
+value = My Great Example

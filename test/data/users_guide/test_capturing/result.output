@@ -1,0 +1,29 @@
+$ python main.py
+<html>
+  <body>
+    <div id="header-part">
+      <h1>My Great Blog</h1>
+    </div>
+    <div id="main-content">
+<h2>Tenjin is Great</h2>
+<div class="blog-post">
+Tenjin has great features.<br />
+- Very Fast<br />
+- Full Featured<br />
+- Easy to Use<br />
+
+</div>
+
+
+    </div>
+    <div id="sidebar-part">
+<h3>Recent Posts</h3>
+<ul>
+  <a href="/blog/1">Tenjin is Fast</a>
+  <a href="/blog/2">Tenjin is Full-Featured</a>
+  <a href="/blog/3">Tenjin is Easy-to-Use</a>
+</ul>
+    </div>
+  </body>
+</html>
+

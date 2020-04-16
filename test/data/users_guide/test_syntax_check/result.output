@@ -1,0 +1,4 @@
+$ pytenjin -z example.pyhtml
+example.pyhtml:4:1: '#endfor' expected but got '#endif'.
+   4: #endif
+      ^

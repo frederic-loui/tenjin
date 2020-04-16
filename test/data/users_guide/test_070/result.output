@@ -1,0 +1,30 @@
+$ python main.py
+<!DOCTYPE>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Tenjin: Layout Template Example</title>
+  </head>
+  <body>
+<div class="header">
+  <h1>Tenjin: Layout Template Example</h1>
+</div>
+<h2>Tenjin Example</h2>
+<table>
+  <tr class="odd">
+    <td>&lt;AAA&gt;</td>
+  </tr>
+  <tr class="even">
+    <td>B&amp;B</td>
+  </tr>
+  <tr class="odd">
+    <td>&quot;CCC&quot;</td>
+  </tr>
+</table>
+
+<address>
+  copyright(c) 2010 kuwata-lab.com all rights reserved
+</address>
+  </body>
+</html>
+

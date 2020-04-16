@@ -1,0 +1,27 @@
+<html>
+  <body>
+    <div id="placeholder">
+      <!-- #JS: render_table(items) -->
+      <table>
+        <tbody>
+          <?js for (var i = 0, n = items.length; i < n; i++) { ?>
+          <?js     var klass = i % 2 ? 'even' : 'odd'; ?>
+          <tr class="#{klass}">
+            <td>${items[i]}</td>
+          </tr>
+          <?js } ?>
+        </tbody>
+      </table>
+      <!-- #/JS -->
+    </div>
+    <script>#{tenjin.JS_FUNC}</script>
+    <script>
+/// example code to render table
+(function() {
+   var items = ["Haruhi", "Mikuru", "Yuki"];
+   var e = document.getElementById('placeholder');
+   e.innerHTML = render_table(items);
+ })();
+    </script>
+  </body>
+</html>

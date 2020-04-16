@@ -1,0 +1,4 @@
+$ pytenjin -z syntaxerr.pyhtml
+syntaxerr.pyhtml:5:8: invalid syntax
+  5:         else
+            ^

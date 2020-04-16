@@ -1,0 +1,10 @@
+<table>
+  <?py i = 0 ?>
+  <?py for item in items: ?>
+  <?py     i += 1 ?>
+  <tr>
+    <td>#{i}</td>
+    <td>${item}</td>
+  </tr>
+  <?py #endfor ?>
+</table>

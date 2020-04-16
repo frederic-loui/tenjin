@@ -1,0 +1,17 @@
+$ python trace-example.py
+<!-- ***** begin: layout.pyhtml ***** -->
+<html>
+  <body>
+    <div class="content">
+<!-- ***** begin: main.pyhtml ***** -->
+<ul>
+  <li>A</li>
+  <li>B</li>
+  <li>C</li>
+</ul>
+<!-- ***** end: main.pyhtml ***** -->
+    </div>
+  </body>
+</html>
+<!-- ***** end: layout.pyhtml ***** -->
+

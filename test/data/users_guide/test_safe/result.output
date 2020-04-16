@@ -1,0 +1,10 @@
+$ python safe-test.py
+_extend=_buf.extend;_to_str=to_str;_escape=to_escaped; _extend(('''
+a = ''', _escape(a), '''
+b = ''', _escape(b), '''\n''', ));
+
+---------------------
+
+a = &lt;b&gt;SOS&lt;/b&gt;
+b = <b>SOS</b>
+

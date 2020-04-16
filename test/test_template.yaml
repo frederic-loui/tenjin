@@ -1,0 +1,705 @@
+# -*- coding: utf-8 -*-
+##
+##
+##
+
+
+###
+- name:         convert1
+  desc:         basic
+  input: |
+        <html>
+         <body>
+          <table>
+          <?py i = 0 ?>
+          <?py for item in ['<foo>', 'bar&bar', '"baz"']: ?>
+          <?py     i += 1 ?>
+          <?py     if i % 2 == 0: ?>
+          <?py         color = '#FCF' ?>
+          <?py     else: ?>
+          <?py         color = '#FFF' ?>
+          <?py     #endif ?>
+           <tr bgcolor="#{color}">
+            <td>${item}</td>
+           </tr>
+          <?py #endfor ?>
+          </table>
+         </body>
+        </html>
+
+  source: &convert1_source |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<html>
+         <body>
+          <table>\n''', ));
+        i = 0
+        for item in ['<foo>', 'bar&bar', '"baz"']:
+            i += 1
+            if i % 2 == 0:
+                color = '#FCF'
+            else:
+                color = '#FFF'
+            #endif
+            _extend(('''   <tr bgcolor="''', _to_str(color), '''">
+            <td>''', _escape(_to_str(item)), '''</td>
+           </tr>\n''', ));
+        #endfor
+        _extend(('''  </table>
+         </body>
+        </html>\n''', ));
+
+  expected: &convert1_expected |
+        <html>
+         <body>
+          <table>
+           <tr bgcolor="#FFF">
+            <td>&lt;foo&gt;</td>
+           </tr>
+           <tr bgcolor="#FCF">
+            <td>bar&amp;bar</td>
+           </tr>
+           <tr bgcolor="#FFF">
+            <td>&quot;baz&quot;</td>
+           </tr>
+          </table>
+         </body>
+        </html>
+
+
+###
+- name:         convert2
+  desc:         basic2
+  input: |
+        <html>
+         <body>
+          <table>
+          <?py i = 0 ?>
+          <?py for item in ['<foo>', 'bar&bar', '"baz"']: ?>
+              <?py i += 1 ?>
+              <?py if i % 2 == 0: ?>
+                  <?py color = '#FCF' ?>
+              <?py else: ?>
+                  <?py color = '#FFF' ?>
+              <?py #endif ?>
+           <tr bgcolor="#{color}">
+            <td>${item}</td>
+           </tr>
+          <?py #endfor ?>
+          </table>
+         </body>
+        </html>
+
+  source:  *convert1_source
+
+  expected:  *convert1_expected
+
+
+###
+- name:         convert3
+  desc:         basic3
+  input: |
+        <html>
+         <body>
+          <table>
+        <?py
+          i = 0
+          for item in ['<foo>', 'bar&bar', '"baz"']:
+              i += 1
+              if i % 2 == 0:
+                  color = '#FCF'
+              else:
+                  color = '#FFF'
+              #endif
+        ?>
+           <tr bgcolor="#{color}">
+            <td>${item}</td>
+           </tr>
+        <?py
+          #endfor
+        ?>
+          </table>
+         </body>
+        </html>
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<html>
+         <body>
+          <table>\n''', ));
+        
+        i = 0
+        for item in ['<foo>', 'bar&bar', '"baz"']:
+            i += 1
+            if i % 2 == 0:
+                color = '#FCF'
+            else:
+                color = '#FFF'
+            #endif
+        
+            _extend(('''   <tr bgcolor="''', _to_str(color), '''">
+            <td>''', _escape(_to_str(item)), '''</td>
+           </tr>\n''', ));
+        
+        #endfor
+        
+        _extend(('''  </table>
+         </body>
+        </html>\n''', ));
+
+  expected:  *convert1_expected
+
+
+###
+- name:         convert4
+  desc:         mixing styles
+  input: |
+        <?py
+        users = [
+            {'name': 'Foo', 'email': 'foo@mail.com'},
+            {'name': 'Bar',},
+            {'name': 'Baz', 'email': 'baz@mail.org'},
+        ]
+        ?>
+        <ul>
+          <?py i = 0 ?>
+          <?py for user in users: ?>
+          <?py     i += 1 ?>
+          <li><?py
+            if user.get('email'):
+        ?><a href="mailto:${user['email']}">${user['name']}</a><?py
+            else:
+        ?>${user['name']}<?py
+            #endif
+        ?></li>
+        <?py #endfor ?>
+        </ul>
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; 
+        users = [
+        {'name': 'Foo', 'email': 'foo@mail.com'},
+        {'name': 'Bar',},
+        {'name': 'Baz', 'email': 'baz@mail.org'},
+        ]
+        
+        _extend(('''<ul>\n''', ));
+        i = 0
+        for user in users:
+            i += 1
+            _extend(('''  <li>''', ));
+            if user.get('email'):
+                _extend(('''<a href="mailto:''', _escape(_to_str(user['email'])), '''">''', _escape(_to_str(user['name'])), '''</a>''', ));
+            else:
+                _extend((_escape(_to_str(user['name'])), ));
+            #endif
+            _extend(('''</li>\n''', ));
+        #endfor
+        _extend(('''</ul>\n''', ));
+
+  expected: |
+        <ul>
+          <li><a href="mailto:foo@mail.com">Foo</a></li>
+          <li>Bar</li>
+          <li><a href="mailto:baz@mail.org">Baz</a></li>
+        </ul>
+
+###
+- name:         convert5
+  desc:         line starting with embedded expression
+  input: |
+        <ul>
+        <?py for i in range(1,4): ?>
+        <li>
+        #{i}
+        </li>
+        <?py #endfor ?>
+        </ul>
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<ul>\n''', ));
+        for i in range(1,4):
+            _extend(('''<li>
+        ''', _to_str(i), '''
+        </li>\n''', ));
+        #endfor
+        _extend(('''</ul>\n''', ));
+
+  expected: |6
+        <ul>
+        <li>
+        1
+        </li>
+        <li>
+        2
+        </li>
+        <li>
+        3
+        </li>
+        </ul>
+
+###
+- name:         convert6
+  desc:         lspaces
+  testopts:  { spacechar: '^' }
+  input: |6
+          <?py
+        i = 0
+        for item in ['a', 'b', 'c']:
+            i += 1
+           ?>
+        <p>
+            <?py if i % 2 == 1: ?>
+        <span>#{item}</span>
+            <?py #endif ?>
+        </p>
+          <?py
+        #endfor
+           ?>
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; 
+        i = 0
+        for item in ['a', 'b', 'c']:
+            i += 1
+          
+            _extend(('''<p>\n''', ));
+            if i % 2 == 1:
+                _extend(('''<span>''', _to_str(item), '''</span>\n''', ));
+            #endif
+            _extend(('''</p>\n''', ));
+        
+        #endfor
+          
+
+  expected: |
+        <p>
+        <span>a</span>
+        </p>
+        <p>
+        </p>
+        <p>
+        <span>c</span>
+        </p>
+
+
+###
+- name:         quotation1
+  desc:         single quotation
+  input: &quotation1_input |
+        'foo' and 'bar'
+        r"a'b'\n"
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''\'foo\' and \'bar\'
+        r"a\'b\'\\n"\n''', ));
+
+  expected: *quotation1_input
+
+
+###
+- name:         newline1
+  desc:         'newline is \r\n'
+  testopts:     { crchar: '^' }
+  input: |6
+        <?py for value in range(0,3): ?>^
+        #{value}^
+        i = #{value}^
+        <?py #end ?>^
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; 
+        for value in range(0,3):
+            _extend((_to_str(value), '''\r
+        i = ''', _to_str(value), '''\r\n''', ));
+        #end
+
+  expected: |
+        0^
+        i = 0^
+        1^
+        i = 1^
+        2^
+        i = 2^
+
+
+###
+- name:         newline2
+  desc:         'newline is \r\n'
+  testopts:     { crchar: '^' }
+  input: |
+        <p>^
+        <?py^
+        for value in range(0,3):^
+        ?>^
+        i = #{value}^
+        #{value}^
+        <?py^
+        #end^
+        ?>^
+        </p>^
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<p>\r\n''', ));
+        
+        for value in range(0,3):
+        
+            _extend(('''i = ''', _to_str(value), '''\r
+        ''', _to_str(value), '''\r\n''', ));
+        
+        #end
+        
+        _extend(('''</p>\r\n''', ));
+
+  expected: |
+        <p>^
+        i = 0^
+        0^
+        i = 1^
+        1^
+        i = 2^
+        2^
+        </p>^
+
+
+###
+- name:         option_initbuf1
+  desc:         initbuf option with input which starts with text
+  options: { preamble: true, postamble: true }
+  #options: { initbuf: true }
+  input: |
+        <ul>
+        <?py for i in range(0,3): ?>
+        <li>#{i}</li>
+        <?py #end ?>
+        </ul>
+
+  source: |
+        _buf = []; _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<ul>\n''', ));
+        for i in range(0,3):
+            _extend(('''<li>''', _to_str(i), '''</li>\n''', ));
+        #end
+        _extend(('''</ul>\n''', ));
+        print(''.join(_buf))
+
+
+###
+- name:         option_initbuf2
+  desc:         initbuf option with input which starts with"python" code
+  options: { preamble: true, postamble: true }
+  #options: { initbuf: true }
+  input: |
+        <?py for i in range(0,3): ?>
+        #{i}
+        <?py #end ?>
+
+  source: |
+        _buf = []
+	_extend=_buf.extend;_to_str=to_str;_escape=escape; 
+        for i in range(0,3):
+            _extend((_to_str(i), '''\n''', ));
+        #end
+        print(''.join(_buf))
+
+
+###
+- name:         option_escapefunc1
+  desc:         escapefunc option
+  options:      { escapefunc: cgi.escape }
+
+  input: |
+        #{value}
+        ${value}
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=cgi.escape; _extend((_to_str(value), '''
+        ''', _escape(_to_str(value)), '''\n''', ));
+
+
+###
+- name:         option_tostrfunc1
+  desc:         tostrfunc option
+  options: { tostrfunc: str }
+  disabled:     false
+  input: |
+        #{value}
+        ${value}
+  source: |6
+        _extend=_buf.extend;_to_str=str;_escape=escape; _extend((_to_str(value), '''
+        ''', _escape(_to_str(value)), '''\n''', ));
+
+
+###
+- name:         option_indent1
+  desc:         indent  option
+  options: { indent: 2 }
+  disabled:     false
+
+  input: |
+        <?py for i in range(0,3): ?>
+        i = #{value}
+        <?py #end ?>
+
+  source: |
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; 
+        for i in range(0,3):
+          _extend(('''i = ''', _to_str(value), '''\n''', ));
+        #end
+
+
+###
+- name:         option_encoding1
+  desc:         encoding option
+  disabled:     true
+  options: { encoding: utf-8 }
+  testopts: { encoding: utf-8 }
+  input: |
+        こんにちは${user}!
+        <ul>
+        <?py for ch in [u'日', u'本', u'語', u'']: ?>
+          <li>#{ch}</li>
+        <?py #end ?>
+        </ul>
+
+  source: |
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend((u'''こんにちは''', _escape(_to_str(user)), u'''!
+        <ul>\n''', ));
+        for ch in [u'日', u'本', u'語', u'']:
+            _extend((u'''  <li>''', _to_str(ch), u'''</li>\n''', ));
+        #end
+        _extend((u'''</ul>\n''', ));
+
+  context: { user: 世界 }
+  expected: |
+        こんにちは世界!
+        <ul>
+          <li>日</li>
+          <li>本</li>
+          <li>語</li>
+          <li></li>
+        </ul>
+
+###
+- name:         syntaxerr1
+  desc:         syntax error
+  filename:     syntaxerr1.tenjin
+  disabled:     false
+  input: |
+        <?py for i in range(0,3) ?>
+        #{i}
+        <?py #end ?>
+  source: |
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; 
+        for i in range(0,3)
+            _buf.append(_to_str(i))
+        #end
+  exception:    SyntaxError
+  errormsg:     invalid syntax
+
+
+###
+- name:         escape1
+  desc:         escape() function
+  input: &input_escape1 |
+        ${var}
+
+  source: &source_escape1 |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend((_escape(_to_str(var)), '''\n''', ));
+
+  expected: |
+        &amp; &lt; &gt; &quot;
+
+  context:  { var: '& < > "' }
+
+
+###
+- name:         to_str1
+  desc:         to_str() function
+  disabled:     false
+  input: |
+        #{var},#{flag},#{flag2}
+        ${var},${flag},${flag2}
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend((_to_str(var), ''',''', _to_str(flag), ''',''', _to_str(flag2), '''
+        ''', _escape(_to_str(var)), ''',''', _escape(_to_str(flag)), ''',''', _escape(_to_str(flag2)), '''\n''', ));
+
+  expected: |
+        ,True,False
+        ,True,False
+
+  context:   { var: null, flag: true, flag2: false }
+
+
+##
+- name:         template_args
+  desc:         '#@ARGS'
+  input: |
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">
+        <?py #@ARGS name, x,y,z ?>
+        <ul>
+        <span>hello #{name}</span>
+        <span>hello #{name2}</span>
+        </ul>
+
+  source: |6
+        _buf = []; _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN">\n''', ));
+        name = _context.get('name'); x = _context.get('x'); y = _context.get('y'); z = _context.get('z'); 
+        _extend(('''<span>hello ''', _to_str(name), '''</span>
+          <span>hello ''', _to_str(name2), '''</span>
+        </ul>\n''', ));
+        print(''.join(_buf))
+
+  context: { name: 'world' }
+  exception:    NameError
+  errormsg:     "name 'name2' is not defined"
+
+
+##
+- name:         template_args2
+  desc:         empty '#@ARGS'
+  input: |
+        <!DOCTYPE>
+        <?py #@ARGS ?>
+        <p>hello</p>
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''<!DOCTYPE>\n''', ));
+        
+        _extend(('''<p>hello</p>\n''', ));
+
+
+##
+- name:         arraybuffertemplate1
+  desc:         ArrayBufferTemplate class
+  disabled:     true
+  testopts:     { templateclass: 'Tenjin::ArrayBufferTemplate' }
+  input: |
+
+  source: |6
+
+  expected: |
+
+  context:   { items: ['<AAA>', 'B&B', '"CCC"'] }
+
+
+###
+- name:         preprocessor1
+  desc:         template class for preprocessor
+  testopts:     { templateclass: tenjin.Preprocessor }
+
+  input: |
+        <?PY states = { "CA": "California", ?>
+        <?PY            "NY": "New York", ?>
+        <?PY            "FL": "Florida", } ?>
+        <?PY # ?>
+        <?py chk = { params['state']: ' checked="checked"' } ?>
+        <?PY codes = list(states.keys()) ?>
+        <?PY codes.sort() ?>
+        <select name="state">
+          <option value="">-</option>
+        <?PY for code in codes: ?>
+          <option value="#{{code}}"#{chk.get(#{{repr(code)}}, '')}>${{states[code]}}</option>
+        <?PY #endfor ?>
+        </select>
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; states = { "CA": "California",
+        "NY": "New York",
+        "FL": "Florida", }
+        #
+        _extend(('''<?py chk = { params[\'state\']: \' checked="checked"\' } ?>\n''', ));
+        codes = list(states.keys())
+        codes.sort()
+        _extend(('''<select name="state">
+          <option value="">-</option>\n''', ));
+        for code in codes:
+            _extend(('''  <option value="''', _to_str(_decode_params(code)), '''"#{chk.get(''', _to_str(_decode_params(repr(code))), ''', \'\')}>''', _escape(_to_str(_decode_params(states[code]))), '''</option>\n''', ));
+        #endfor
+        _extend(('''</select>\n''', ));
+
+  expected: |
+        <?py chk = { params['state']: ' checked="checked"' } ?>
+        <select name="state">
+          <option value="">-</option>
+          <option value="CA"#{chk.get('CA', '')}>California</option>
+          <option value="FL"#{chk.get('FL', '')}>Florida</option>
+          <option value="NY"#{chk.get('NY', '')}>New York</option>
+        </select>
+
+
+##
+- name:         preprocessor2
+  desc:         template class for preprocessor
+  testopts:     { templateclass: tenjin.Preprocessor }
+  input: |6
+        <?PY def link_to(label, url): ?>
+        <?PY     import urllib ?>
+        <?PY     return '<a href="%s">%s</a>' % (urllib.quote(url), label) ?>
+        <?PY #end ?>
+        #{{link_to('<b>Create</b>', '/items/create')}}
+        #{{link_to('"Show '+_P("item['name']")+'"', '/items/show/'+_p("item['id']"))}}
+        #{{_escape('<b>'+_P('item["name"]')+'</b>')}}
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; 
+        def link_to(label, url):
+            import urllib
+            return '<a href="%s">%s</a>' % (urllib.quote(url), label)
+        #end
+        _extend((_to_str(_decode_params(link_to('<b>Create</b>', '/items/create'))), '''
+        ''', _to_str(_decode_params(link_to('"Show '+_P("item['name']")+'"', '/items/show/'+_p("item['id']")))), '''
+        ''', _to_str(_decode_params(_escape('<b>'+_P('item["name"]')+'</b>'))), '''\n''', ));
+
+  expected: |6
+        <a href="/items/create"><b>Create</b></a>
+        <a href="/items/show/#{item['id']}">"Show ${item['name']}"</a>
+        &lt;b&gt;${item["name"]}&lt;/b&gt;
+
+  context: { item: { id: 101, name: foo } }
+#  expected: |
+#       <a href="/items/create"><b>Create</b></a>
+#       <a href="/items/show/#{item['id']}">"Show ${item['name']}"</a>
+#       &lt;b&gt;${item['name']}&lt;/b&gt;
+
+
+##
+- name:         smarttrim1
+  desc:         smarttrim option
+  disabled:     false
+  options:      { smarttrim: true }
+  input: |6
+        #{"A"}
+        #{"B"}
+        #{"C"}
+        foo#{"D"}
+        #{"E"}bar
+        #{"F"}#{"G"}
+        <?py if True: ?>
+        #{"H"}
+        #{"I"}
+        #{"J"}
+        <?py #end ?>
+        ${"K"}
+        ${"L"}
+        #{"M"}
+
+  source: |6
+        _extend=_buf.extend;_to_str=to_str;_escape=escape; _extend((_to_str("A"), 
+        _to_str("B"), 
+        _to_str("C"), 
+        '''foo''', _to_str("D"), '''
+        ''', _to_str("E"), '''bar
+        ''', _to_str("F"), _to_str("G"), ));
+        if True:
+            _extend((_to_str("H"), 
+        _to_str("I"), 
+        _to_str("J"), ));
+        #end
+        _extend((_escape(_to_str("K")), '''
+        ''', _escape(_to_str("L")), '''
+        ''', _to_str("M"), ));
+
+  expected: |-
+        ABCfooD
+        Ebar
+        FGHIJK
+        L
+        M

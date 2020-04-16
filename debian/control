@@ -1,0 +1,57 @@
+Source: tenjin
+Maintainer: frederic.loui@renater.fr <frederic.loui@renater.fr>
+Section: python
+Priority: optional
+Build-Depends: dh-python, python-all-dev (>= 2.6.6-3), debhelper (>= 9), python-setuptools (>= 0.6b3),  python3-setuptools , python3-all-dev, 
+Standards-Version: 3.9.6
+Homepage: http://www.kuwata-lab.com/tenjin/
+
+Package: python-tenjin
+Architecture: all
+Depends: ${misc:Depends}, ${python:Depends}
+Description: a fast and full-featured template engine based on embedded P
+ About
+ -----
+ .
+ pyTenjin is a very fast and full-featured template engine.
+ You can embed Python statements and expressions into your template file.
+ pyTenjin converts it into Python script and evaluate it.
+ .
+ !!ATTENTION!!
+ .
+ pyTenjin is enough stable, but it is under beta release.
+ It means that API or specification may change in the future.
+ .
+ .
+ Features
+ --------
+ .
+ * Very fast
+ .
+   - About x10 faster than Django, x4 than Cheetah, x2 than Mako
+   - In addition loading tenjin.py is very lightweight (important for CGI)
+
+Package: python3-tenjin
+Architecture: all
+Depends: ${misc:Depends}, ${python3:Depends}
+Description: a fast and full-featured template engine based on embedded P
+ About
+ -----
+ .
+ pyTenjin is a very fast and full-featured template engine.
+ You can embed Python statements and expressions into your template file.
+ pyTenjin converts it into Python script and evaluate it.
+ .
+ !!ATTENTION!!
+ .
+ pyTenjin is enough stable, but it is under beta release.
+ It means that API or specification may change in the future.
+ .
+ .
+ Features
+ --------
+ .
+ * Very fast
+ .
+   - About x10 faster than Django, x4 than Cheetah, x2 than Mako
+   - In addition loading tenjin.py is very lightweight (important for CGI)

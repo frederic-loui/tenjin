@@ -1,0 +1,5 @@
+<?py #@ARGS post_content ?>
+<?py _context['_layout'] = '_blog_layout.pyhtml' ?>
+<div class="article">
+#{text2html(post_content)}
+</div>

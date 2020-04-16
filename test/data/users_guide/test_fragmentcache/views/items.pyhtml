@@ -1,0 +1,11 @@
+<?py #@ARGS get_items ?>
+<div>
+  <?py # fragment cache with key ('items/1') and lifetime (60sec) ?>
+  <?py for _ in cache_as('items/1', 60): ?>
+  <ul>
+    <?py     for item in get_items(): ?>
+    <li>${item}</li>
+    <?py     #endfor ?>
+  </ul>
+  <?py #endfor ?>
+</div>

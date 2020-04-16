@@ -1,0 +1,5 @@
+<ul>
+  <?py for item in items: ?>
+  <li>${item}</li>
+  <?py #endfor ?>
+</ul>

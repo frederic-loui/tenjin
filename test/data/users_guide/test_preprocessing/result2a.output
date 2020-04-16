@@ -1,0 +1,10 @@
+$ pytenjin -P views/pp-example2.pyhtml
+<?py chk = { params['state']: ' selected="selected"' } ?>
+<select name="state">
+  <option value="">-</option>
+  <option value="CA"#{chk.get('CA', '')}>California</option>
+  <option value="FL"#{chk.get('FL', '')}>Florida</option>
+  <option value="HI"#{chk.get('HI', '')}>Hawaii</option>
+  <option value="NY"#{chk.get('NY', '')}>New York</option>
+  <option value="TX"#{chk.get('TX', '')}>Texas</option>
+</select>

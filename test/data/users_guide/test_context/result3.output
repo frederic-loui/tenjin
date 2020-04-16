@@ -1,0 +1,6 @@
+$ pytenjin -f context.py example.pyhtml
+<ul>
+  <li>AAA</li>
+  <li>123</li>
+  <li>True</li>
+</ul>

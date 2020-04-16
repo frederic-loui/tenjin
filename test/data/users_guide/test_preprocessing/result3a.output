@@ -1,0 +1,2 @@
+$ pytenjin -P views/pp-example3.pyhtml
+<a href="/items/show/#{params["id"]}">Show ${params["name"]}</a>

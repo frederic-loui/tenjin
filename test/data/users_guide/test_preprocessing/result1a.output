@@ -1,0 +1,13 @@
+$ python pp-example1.py
+------ converted script ------
+_extend=_buf.extend;_to_str=to_str;_escape=escape; _extend(('''## normal expression
+value = ''', _escape(_to_str(value)), '''
+## with preprocessing
+value = My Great Example\n''', ));
+
+------ rendered html ------
+## normal expression
+value = My Great Example
+## with preprocessing
+value = My Great Example
+

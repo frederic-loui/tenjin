@@ -1,0 +1,92 @@
+###
+### $Date$
+###
+
+
+###
+- name:		lint1
+  desc:		valid syntax
+  options: '-z'
+  input: |
+	<ul>
+	<?py i = 0 ?>
+	<?py for item in items: ?>
+	<?py     i += 1 ?>
+	<?py     color = i % 2 == 0 and 'FFF' or 'FCF' ?>
+	 <li>${item}</li>
+	<?py #end ?>
+	</ul>
+  expected: |
+	.test.pyhtml - ok.
+
+###
+- name:		lint2
+  desc:		tail ':' is missed
+  options: '-z'
+  input: |
+	<ul>
+	<?py i = 0 ?>
+	<?py for item in items ?>
+	<?py     i += 1 ?>
+	<?py     color = i % 2 == 0 and 'FFF' or 'FCF' ?>
+	 <li>${item}</li>
+	<?py #endfor ?>
+	</ul>
+  expected: |
+	.test.pyhtml:7:1: '#endfor' found but corresponding statement is missing.
+	   7: #endfor
+	      ^
+
+###
+- name:		lint3
+  desc:		uncorresponding end
+  options: '-z'
+  input: |
+	<ul>
+	<?py  i = 0 ?>
+	<?py  for item in items: ?>
+	<?py      i += 1 ?>
+	<?py      color = i % 2 == 0 and 'FFF' or 'FCF' ?>
+	 <li>${item}</li>
+	<?py  #endif ?>
+	</ul>
+  expected: |
+	.test.pyhtml:7:2: '#endfor' expected but got '#endif'.
+	   7:  #endif
+	       ^
+
+###
+- name:		lint4
+  desc:		block is not closed
+  options: '-z'
+  input: |
+	<ul>
+	<?py  i = 0 ?>
+	<?py  for item in items: ?>
+	<?py      i += 1 ?>
+	<?py      color = i % 2 == 0 and 'FFF' or 'FCF' ?>
+	 <li>${item}</li>
+	<?py  ### ?>
+	</ul>
+  expected: |
+	.test.pyhtml:3:2: 'for' is not closed.
+	   3:  for item in items:
+	       ^
+
+###
+- name:		lint5
+  desc:		invalid python syntax
+  options: '-z'
+  input: |
+	<ul>
+	<?py  x = 0 ?>
+	<?py  if x > 0: ?>
+	   positivie
+	<?py  else ?>
+	   negative
+	<?py  #endif ?>
+	</ul>
+  expected: |
+	.test.pyhtml:5:8: invalid syntax
+	  5:     else
+	            ^
